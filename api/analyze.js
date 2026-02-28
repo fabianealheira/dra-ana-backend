@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       messages: messages,
     });
 
-    return res.status(200).json({
+  return res.status(200).json({
   answer: response.choices[0].message.content,
 });
 
