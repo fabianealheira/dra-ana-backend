@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 
+import { systemPrompt } from "../lib/systemPrompt.js";
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -13,7 +15,7 @@ export default async function handler(req, res) {
     const { messages } = req.body;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4.1",
+      model: "gpt-5.2",
       messages: messages,
     });
 
