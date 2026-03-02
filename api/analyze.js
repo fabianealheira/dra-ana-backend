@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-
 import { systemPrompt } from "../lib/systemPrompt.js";
 
 const openai = new OpenAI({
@@ -12,21 +11,40 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages } = req.body;
+    const { message } = req.body;
 
-    const response = await openai.chat.completions.create({
+    if (!message) {
+      return res.status(400).json({ error: "Missing message" });
+    }
+
+    const response = await openai.responses.create({
       model: "gpt-5.2",
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...messages
+      input: [
+        {
+          role: "system",
+          content: [
+            { type: "input_text", text: systemPrompt }
+          ]
+        },
+        {
+          role: "user",
+          content: [
+            { type: "input_text", text: message }
+          ]
+        }
       ],
+      temperature: 0.2
     });
 
+    const answer = response.output_text;
+
     return res.status(200).json({
-      answer: response.choices[0].message.content,
+      answer
     });
 
   } catch (error) {
+    console.error("Erro backend:", error);
+
     return res.status(500).json({
       error: "Erro ao processar requisição",
       details: error.message,
