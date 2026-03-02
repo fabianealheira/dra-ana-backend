@@ -7,14 +7,14 @@ const openai = new OpenAI({
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).send({ error: "Method not allowed" });
   }
 
   try {
     const { message } = req.body;
 
-    if (!message) {
-      return res.status(400).json({ error: "Missing message" });
+    if (!message || message.trim() === "") {
+      return res.status(400).send({ error: "Missing message" });
     }
 
     const response = await openai.responses.create({
@@ -38,11 +38,13 @@ export default async function handler(req, res) {
 
     const answer = response.output_text;
 
-    return res.status(200).json({ answer });
+    return res.status(200).send({
+      answer: answer
+    });
 
   } catch (error) {
     console.error("Erro backend:", error);
-    return res.status(500).json({
+    return res.status(500).send({
       error: "Erro ao processar requisição",
       details: error.message,
     });
