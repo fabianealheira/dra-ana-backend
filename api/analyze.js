@@ -11,10 +11,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message } = req.body;
+    const { messages } = req.body;
 
-    if (!message) {
-      return res.status(400).json({ error: "Missing message" });
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: "Missing or invalid messages array" });
     }
 
     const response = await openai.responses.create({
@@ -26,12 +26,12 @@ export default async function handler(req, res) {
             { type: "input_text", text: systemPrompt }
           ]
         },
-        {
-          role: "user",
+        ...messages.map(msg => ({
+          role: msg.role,
           content: [
-            { type: "input_text", text: message }
+            { type: "input_text", text: msg.content }
           ]
-        }
+        }))
       ],
       temperature: 0.2
     });
