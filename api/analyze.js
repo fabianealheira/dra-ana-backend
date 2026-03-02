@@ -38,7 +38,7 @@ export default async function handler(req, res) {
 
     const answer = response.output_text;
 
-    return res.status(200).send(answer);
+    return res.status(200).send(answer); // ← TEXTO PURO
 
   } catch (error) {
     console.error("Erro backend:", error);
