@@ -11,10 +11,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages } = req.body;
+    const { message } = req.body;
 
-    if (!messages || !Array.isArray(messages)) {
-      return res.status(400).json({ error: "Missing or invalid messages array" });
+    if (!message) {
+      return res.status(400).json({ error: "Missing message" });
     }
 
     const response = await openai.responses.create({
@@ -26,25 +26,22 @@ export default async function handler(req, res) {
             { type: "input_text", text: systemPrompt }
           ]
         },
-        ...messages.map(msg => ({
-          role: msg.role,
+        {
+          role: "user",
           content: [
-            { type: "input_text", text: msg.content }
+            { type: "input_text", text: message }
           ]
-        }))
+        }
       ],
       temperature: 0.2
     });
 
     const answer = response.output_text;
 
-    return res.status(200).json({
-      answer
-    });
+    return res.status(200).json({ answer });
 
   } catch (error) {
     console.error("Erro backend:", error);
-
     return res.status(500).json({
       error: "Erro ao processar requisição",
       details: error.message,
